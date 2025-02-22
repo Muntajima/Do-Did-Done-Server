@@ -24,14 +24,42 @@ const client = new MongoClient(uri, {
 function run() {
   try {
 
+    const userCollection = client.db('task-management').collection('users');
+    const taskCollection = client.db('task-management').collection('tasks')
+
+    app.get('/users', async(req, res) =>{
+      console.log(req.headers);
+      const cursor = userCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
+    
+    app.post('/users', async(req, res) =>{
+      const newUser = req.body;
+      console.log("new user", newUser);
+
+      const query = {email: newUser.email}
+      const existingUser = await userCollection.findOne(query)
+      const result = await userCollection.insertOne(newUser);
+      res.send(result)
+    })
+
+    app.get('/tasks', async(req, res) =>{
+      const cursor = taskCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+  })
+
+
+
     //https://do-did-done-server.vercel.app/
 
 
     // Connect the client to the server	(optional starting in v4.7)
-    //client.connect();
+    client.connect();
     // Send a ping to confirm a successful connection
-    // client.db("admin").command({ ping: 1 });
-    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    client.db("admin").command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } catch {
     // Ensures that the client will close when you finish/error
     //await client.close();
