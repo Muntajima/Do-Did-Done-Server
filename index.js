@@ -57,6 +57,17 @@ function run() {
     res.send(result);
   })
 
+  app.put('/tasks/:id', async (req, res) => {
+    const id = req.params.id;
+    const updatedTask = req.body;
+
+    const query = { _id: new ObjectId(id) };
+    const updateDoc = { $set: updatedTask };
+
+    const result = await taskCollection.updateOne(query, updateDoc);
+    res.send(result);
+});
+
 
 
     //https://do-did-done-server.vercel.app/
